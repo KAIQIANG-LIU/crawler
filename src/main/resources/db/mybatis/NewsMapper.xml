@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="NewsMapper">
+    <insert id="insetNews" parameterType="org.github.zaker.News">
+        INSERT INTO NEWS (TITLE, CONTENT, URL, CREATED_AT, MODIFIED_AT)
+        VALUES (#{title}, #{content}, #{url}, NOW(), NOW())
+    </insert>
+    <insert id="insertLink" parameterType="HashMap">
+        INSERT INTO
+        <choose>
+            <when test="tableName == 'links_already_processed'">
+                LINKS_ALREADY_PROCESSED
+            </when>
+            <otherwise>
+                LINKS_TO_BE_PROCESSED
+            </otherwise>
+        </choose>
+        (LINK)
+        VALUES ( #{link} )
+    </insert>
+    <delete id="deleteLink" parameterType="String">
+        DELETE
+        FROM LINKS_TO_BE_PROCESSED
+        WHERE LINK = #{link}
+    </delete>
+    <select id="selectNextLink" resultType="String">
+        SELECT LINK
+        FROM LINKS_TO_BE_PROCESSED
+        LIMIT 1
+    </select>
+    <select id="isLinkProcessed" parameterType="String" resultType="int">
+        SELECT COUNT(LINK)
+        FROM LINKS_ALREADY_PROCESSED
+        WHERE LINK = #{link}
+    </select>
+    <select id="selectNews" resultType="org.github.zaker.News">
+        select ID,TITLE, CONTENT, URL, CREATED_AT, MODIFIED_AT
+        from NEWS
+        limit 200
+    </select>
+
+</mapper>
